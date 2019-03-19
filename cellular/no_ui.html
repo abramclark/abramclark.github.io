@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+
+body { margin: 0; height: 100%; }
+body > * { position: absolute; top: 0; left: 0; }
+canvas { width: 100%; height: 100%; }
+textarea {
+  font-size: large;
+  font-family: monospace;
+  width: 44em; height: 7em;
+  background: none;
+}
+.button {
+  cursor: default;
+  display: none;
+  vertical-align: middle;
+  font-size: larger;
+}
+.button.on { display: inline-block; }
+#ui {
+  margin: 2em; padding: 1em;
+  font-family: sans-serif;
+  background-color: rgba(255,255,255,.9);
+  position: fixed;
+}
+#error { color: red; }
+
+</style>
+</head>
+<body>
+<canvas width='1000' height='700'></canvas>
+</body>
+<script>
+
+let rules = {
+  triangles: (a, b, c) =>{
+    let avg = (a + b + c) / 3
+    return [a-b, a-c, b-c].findIndex(x => Math.abs(x) > .2) == -1 ?
+        avg + Math.exp(avg) / 500 :
+        Math.min(a + b, a + c, b + c) * .49
+  },
+  oil_run: (a, b, c, i) => Math.random() > .001 ?
+    (Math.random() > .05 ?
+      (Math.random() < .3333 ? a : (Math.random() > .5 ? b : c)) :
+      (a + b + c) / 3
+    ) :
+    (Math.sin(i / 318) / 2 + .5 + Math.sin(t) / 2 + .5)
+},
+
+rule = rules.oil_run, width, cells, t = 0, neighbors = i =>
+  [ cells[i > 0 ? i - 1 : width - 1], cells[i], cells[(i + 1) % width], i ],
+cellulate = ()=>{
+  t += .01
+  return cells.map( (x, i) => rule(...neighbors(i)) )
+},
+
+draw, tiles, tileSize = 100, tileMargin = 0, tileOffset = 0, go = 1,
+render = ()=>{
+  tiles.forEach( (x, i) => draw.putImageData(
+    x.getImageData(0, 0, width, tileSize), 0, i * tileSize - tileOffset ) )
+  tileOffset += 1
+  if(go) setTimeout(()=> requestAnimationFrame(render), 50)
+  if(tileOffset > tileSize - tileMargin){
+    renderTile(tiles[0])
+    tiles.push(tiles.shift())
+    tileOffset = 0
+  }
+},
+
+renderTile = tile => range(tileSize).forEach(x =>{
+  let cells2 = cellulate()
+  tile.putImageData(cells2Img(cells), 0, x)
+  cells = cells2
+}),
+ 
+cell_reset = [
+  ()=> range(0, 1, 1/width),
+  ()=> range(0, 1, 2/width).concat(range(0, 1, 2/width).reverse()),
+  ()=> range(width).map(Math.random),
+  ()=> {
+      let l = Array(95).fill(0), out = []
+      l = l.concat([1,1,1,1,1])
+      while(out.length < width) out = out.concat(l)
+      return out
+  }
+].map(f => ()=> cells = new Float32Array(f())),
+
+height, init = ()=>{
+  let canvas = document.getElementsByTagName('canvas')[0]
+  draw = canvas.getContext('2d')
+  width = canvas.width = canvas.offsetWidth
+  height = canvas.height = width * canvas.offsetHeight / width
+  cell_reset[3]()
+  tiles = range( Math.ceil(height / (tileSize - tileMargin)) + 1
+    ).map( x => buff(width, tileSize) )
+  tiles.forEach(renderTile)
+
+  render()
+},
+
+cellColor = x => Math.abs(((x+1)/2 % 1 - .5) * 510),
+cells2Img = cells =>{
+  let img = new ImageData(width, 1)
+  cells.forEach( (x, i) =>{
+    [0,1,2].forEach(o => img.data[i*4+o] = cellColor(x) )
+    img.data[i*4+3] = 255
+  })
+  return img
+},
+
+range = (start, end, step=1) =>{
+  if( end === undefined ){ end = start; start = 0 }
+  for(var l = []; start < end; start += step) l.push(start)
+  return l
+},
+
+buff = (width, height) =>{
+  let canvas = document.createElement('canvas')
+  canvas.width = width; canvas.height = height
+  return canvas.getContext('2d')
+}
+
+init()
+</script>
+</html>

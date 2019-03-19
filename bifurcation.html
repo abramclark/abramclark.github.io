@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+<script src='jquery.js'></script>
+<script>
+var zs, cs
+
+function calc(){ $.map(range(1200), function(i){
+    zs[i] = zs[i] * zs[i] + cs[i]
+}) }
+
+var c = 0
+function step(){ c++; calc(); draw(c); }
+
+var d, interval, run = ()=>{
+    cs = range(1200).map((v) => -v/600)
+    console.log('oaeuaoeustaohuesth')
+    d = document.getElementsByTagName('canvas')[0].getContext('2d')
+    interval = setInterval(step, 100)
+    $('.button.clear').on('click', clear_canvas)
+    $('.button.zero').on('click', zero_zs)
+    $('.button.random').on('click', random_zs)
+    zero_zs()
+}, stop = function(){
+    clearInterval(interval)
+    $('.button').off('click')
+}
+
+var zero_zs = ()=>{ zs = $.map(range(1200), function(){return 0}) }
+var random_zs = ()=>{ zs = $.map(range(1200), function(){return Math.random()}) }
+
+var draw = (c)=>{
+    function yt(y){ return (y + 2) * 200 }
+    d.beginPath()
+    d.moveTo(0, yt(zs[0]))
+    $.map(range(1, 1200), function(i){ d.lineTo(i, yt(zs[i])) } )
+    d.strokeStyle = 'rgb(0,'+ (c % 256) + ',0)'
+    d.stroke()
+}
+
+var clear_canvas = ()=>{
+  d.fillStyle = 'rgb(255,255,255)'
+  d.clearRect(0,0,1200,800)
+}
+
+var range = function(){
+    // Similar to the python range() function
+    var L = arguments, start, stop, step, r = []
+    if (L.length == 1) start=0, stop=L[0], step=1
+    else start=L[0], stop=L[1], step=L[2] == null ? 1 : L[2]
+    for (var i=start; i < stop; i += step) r.push(i)
+    return r
+}
+</script>
+<style>
+body { margin: 0; font-family: sans-serif; }
+canvas {
+    width: 100%;
+    border: solid black;
+    border-width: 0 0 2px 2px;
+    object-fit: contain;
+}
+.head {
+    height: 80px;
+    text-align: center;
+    margin: 0;
+    padding: 20px 0 0 0;
+    font-size: 40px;
+}
+.rotsym { transform: rotate(90deg); display: inline-block; }
+
+#graph {
+    position: relative;
+    margin: 0 50px 50px 50px;
+    box-sizing: border-box;
+    width: calc(100% - 100px);
+    height: calc(100% - 150px);
+}
+#graph .label {
+    position: absolute;
+    font-size: 40px;
+}
+#x0 { left: 0px; bottom: -40px; }
+#x1 { left: 50%; bottom: -40px; margin-left: -60px; }
+#x2 { right: 0px; bottom: -40px; margin-right: -10px; }
+#y0 { left: -40px; bottom: 0px; }
+#y1 { left: -40px; top: 50%; margin-top: -71px; }
+#y2 { left: -40px; top: 0px; margin-top: -20px; }
+
+#buttons {
+    position: absolute;
+    left: 100px; top: 200px;
+}
+</style>
+</head>
+<body onload='run()'>
+  <h1 class='head'>Z <div class='rotsym'>&#10606;</div> Z<sup>2</sup> - C</h1>
+  <div id='graph'>
+    <canvas width='1200' height='800'></canvas>
+
+    <div class='label' id='x0'>0</div>
+    <div class='label' id='x1'>&larr; C &rarr;</div>
+    <div class='label' id='x2'>2</div>
+
+    <div class='label' id='y0'>-2</div>
+    <div class='label' id='y1'>&uarr;<br>Z<br>&darr;</div>
+    <div class='label' id='y2'>2</div>
+  </div>
+
+  <div id='buttons'>
+    <input type='button' value='clear' class='button clear'>
+    <input type='button' value='zero Zs' class='button zero'>
+    <input type='button' value='random Zs' class='button random'>
+  </div>
+</body>

@@ -1,0 +1,53 @@
+<!doctype html><meta charset="utf-8"/>
+<html>
+<head>
+<script src='index.js'></script>
+<style>
+
+html { max-height:66.66vw; }
+body, body * {
+    display:inline-block; box-sizing:border-box; vertical-align:top;
+    text-align:center; margin:0; background-color:black; color:#EEE;
+    font-size:3vw; font-family:sans-serif; font-weight:100;
+    white-space:collapse;
+}
+#board, button, #board * { border:1px solid #222; }
+#board { width:66.66vw; height:100vh; }
+#board * { width:33.33%; height:33.33%; font-size:30vh; padding:4.5vh 0; }
+#ctrls { width:33.33%; }
+#top { width:100%; height:8vh; padding:2.5vh; }
+#ctrls .ctrls { width:50%; }
+button { width:100%; height:23vh; }
+button.small { width:25%; height:3vw; margin: -.1vw .3vw; }
+button.yes { background-color:#009; }
+button.no { background-color:#900; }
+.hide { display:none }
+.disable { color:#444; }
+
+</style></head><body
+
+><div id='board'></div><div id='ctrls'
+  ><div id='top'
+      ><button id='nback_minus' class='small'>-</button
+      > <span id='nback'>2</span
+      > back <button id='nback_plus' class='small'>+</button
+  ></div
+  ><div id='ctrls1' class='ctrls'
+      ><button id='x'>position</button
+      ><button id='symbol'>symbol</button
+      ><button id='color'>color</button
+      ><button id='sound'>sound</button
+  ></div
+  ><div id='ctrls2' class='ctrls'
+      ><button id='go'
+        ><span class='go start'>start</span
+        ><span class='go stop'>stop</span
+      ></button
+      ><button id='foo' class='disable'>delay<br>3</button
+      ><button id='foo' class='disable'>evilness<br>0</button
+      ><button id='open_settings' class='disable'>⚙️</button
+  ></div
+><div
+><script>o = game().init()</script
+
+></body></html>

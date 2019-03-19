@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+
+var d, aspect;
+
+plot = (f, scale=50, interval=20) =>{
+    d.clearRect(-500, 500, 1000, -1000)
+    d.save()
+    var range_y = [-500 * aspect, 500 * aspect],
+        range_x = [-500, 500]
+    d.translate(range_x[0], range_y[0])
+    for(var y = range_y[0]; y < range_y[1]; y += interval){
+        d.save()
+        try {
+            for(var x = range_x[0]; x < range_x[1]; x += interval){
+                var v = f(x / scale, y / scale)
+                draw_vec(v[0] * scale, v[1] * scale)
+                d.translate(interval, 0)
+            }
+        }
+        catch(e) {
+            d.restore()
+            d.restore()
+            throw(e)
+        }
+        d.restore()
+        d.translate(0, interval)
+    }
+    d.restore()
+}
+
+draw_vec = (x, y)=>{
+    head_scale = 2 / Math.sqrt(x*x + y*y)
+    d.beginPath()
+    d.moveTo(-y * head_scale, x * head_scale)
+    d.lineTo(y * head_scale, -x * head_scale)
+	d.moveTo(0, 0)
+    d.lineTo(x, y)
+    d.stroke()
+}
+
+function init(){
+    var canvas = document.getElementsByTagName('canvas')[0]
+    d = canvas.getContext('2d')
+    window.onresize = () => resize(canvas, 0)
+    resize(canvas, 0)
+}
+
+// TODO: add coordinate info?
+var trace = false;
+mousedown = ev =>{
+    trace = [ev.clientX, ev.clientY]
+    console.log('down')
+};
+mousemove = ev =>{
+    if(!ev.which) mouseup()
+    if(!trace) return
+    //d.moveTo(trace[0], trace[1])
+    //var trace_to = [ev.clientX, ev.clientY]
+    //d.lineTo(trace_to[0], trace_to[1])
+    //d.stroke()
+    //trace = trace_to
+    //console.log(trace, trace_to, ev)
+};
+mouseup = ev =>{
+    trace = false
+};
+
+function resize(canvas){
+    d.restore()
+    var pixels = [document.body.clientWidth, document.body.clientHeight],
+        scale = pixels[0] / 1000
+    aspect = pixels[1] / pixels[0]
+    canvas.width = pixels[0]
+    canvas.height = pixels[1]
+    d.translate(pixels[0] / 2, pixels[1] / 2)
+    d.scale(scale, -scale)
+    d.save()
+}
+
+range = (start, end, step=1)=>{
+  if( end === undefined ){ end = start; start = 0 }
+  for(var l = []; start < end; start += step) l.push(start)
+  return l
+}
+</script>
+<style>
+
+html, body { margin: 0; height: 100%; }
+body > * {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+}
+img { z-index: 0 }
+canvas { z-index: 1 }
+
+</style>
+</head>
+<body>
+<!-- <img src='sky.jpg'> -->
+<canvas width='1024' height='768'></canvas>
+<script>init()</script>
+</body>
+</html>

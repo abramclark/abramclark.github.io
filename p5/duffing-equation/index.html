@@ -1,0 +1,23 @@
+<html>
+<head>
+<script src='../p5.min.js'></script>
+<script src='index.js'></script>
+<style>
+html, body { margin:0; }
+.eqn { position:absolute; margin:1em; font-family:'Lucida Console', monospace; color:grey; }
+#param { color:white }
+</style>
+</head>
+<body>
+<pre class='eqn'>
+ <span id='param'>A</span> = mouseX = <span id='valX'>0</span>
+y0 = mouseY = <span id='valY'>0</span>
+dy = (x - A*y - B*x**3 + C*cos(W*t)) * D * dt
+ A = <span id='freq'>1</span>
+<span id='drive'>.3</span>
+<span id='duffing'>1</span>
+<span id='damping'>.02</span>
+<span id='A'>.35</span>
+</pre>
+</body>
+</html>
