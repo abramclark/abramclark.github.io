@@ -2,171 +2,221 @@
 <html>
 <head>
 <script>
+Object.getOwnPropertyNames(Math).forEach(k => window[k] = Math[k])
 
-let rules = {
-  "identity": (a, b, c) => b,
-  "drips": (a, b, c) => ((a + b + c) / 2.99) % 1,
-  "mountains": (a, b, c) => (1.001 * Math.max( a + b, b + c ) / 2) % 1,
-  "houses": (a, b, c) => (Math.min( a + b, b + c ) / 1.8) % 1,
-  "stacks": (aa, bb, cc) =>{
+var rules = {
+    identity: (a, b, c) => b,
+    drips: (a, b, c) => ((a + b + c) / 2.99) % 1,
+    mountains: (a, b, c) => (1.001 * max( a + b, b + c ) / 2) % 1,
+    houses: (a, b, c) => (min( a + b, b + c ) / 1.8) % 1,
+    // these multiline fns have correct indentation for rule.toString()
+    stacks: (aa, bb, cc) =>{
     let a = aa*.9, b = bb, c = cc*.9, avg = (a + b + c) / 2.8
-    return [a-b, a-c, b-c].findIndex(x => Math.abs(x) > .3333) == -1 ?
-      avg * 1.01 : avg * .96
-  },
-  "triangles": (a, b, c) =>{
-    let avg = (a + b + c) / 3
-    return [a-b, a-c, b-c].findIndex(x => Math.abs(x) > .2) == -1 ?
-        avg + Math.exp(avg) / 500 :
-        Math.min(a + b, a + c, b + c) * .49
-  },
-  "triangle waves": (a, b, c) =>{
-    let avg = (a + b + c) / 3
-    return [a-b, a-c, b-c].findIndex(x => Math.abs(x) > .2) == -1 ?
-        avg + .02 + Math.abs(Math.sin(t) + 1) / 30 :
-        Math.min(a + b, a + c, b + c) * .49
-  },
-  "pi grey": (a, b, c) =>{
-    let avg = (a + b + c) / 3
-    return avg + Math.sin(avg)
-  },
-  "oil run": (a, b, c, i) => Math.random() > .001 ?
-    (Math.random() > .05 ?
-      (Math.random() < .3333 ? a : (Math.random() > .5 ? b : c)) :
-      (a + b + c) / 3
-    ) :
-    (Math.sin(i / 318) / 2 + .5 + Math.sin(t) / 2 + .5)
+    return [a-b, a-c, b-c].findIndex(x => abs(x) > .3333) == -1 ?
+        avg * 1.01 : avg * .96
 },
-
-rule = rules.triangles, width, cells, t = 0, neighbors = i =>
-  [ cells[i > 0 ? i - 1 : width - 1], cells[i], cells[(i + 1) % width], i ],
-cellulate = ()=>{
-  t += .01
-  return cells.map( (x, i) => rule(...neighbors(i)) )
+    triangles: (a, b, c) =>{
+    let avg = (a + b + c) / 3
+    return [a-b, a-c, b-c].findIndex(x => abs(x) > .2) == -1 ?
+        avg + exp(avg) / 500 : min(a + b, a + c, b + c) * .49
 },
-
-draw, tiles, tileSize = 100, tileMargin = 0, tileOffset = 0, go = 1,
-render = ()=>{
-  tiles.forEach( (x, i) => draw.putImageData(
-    x.getImageData(0, 0, width, tileSize), 0, i * tileSize - tileOffset ) )
-  tileOffset += 1
-  if(go) setTimeout(()=> requestAnimationFrame(render), 25)
-  if(tileOffset > tileSize - tileMargin){
-    renderTile(tiles[0])
-    tiles.push(tiles.shift())
-    tileOffset = 0
-  }
+    triangle_waves: (a, b, c) =>{
+    let avg = (a + b + c) / 3
+    return [a-b, a-c, b-c].findIndex(x => abs(x) > .2) == -1 ?
+        avg + .02 + abs(sin(t) + 1) / 30 :
+        min(a + b, a + c, b + c) * .49
 },
+    pi_grey: (a, b, c) =>{
+    let avg = (a + b + c) / 3
+    return avg + sin(avg)
+},
+    oil_run: (a, b, c, i) => (random() > .001 ?
+    (random() > .05 ?
+        (random() < .3333 ? a : (random() > .5 ? b : c)) :
+        (a + b + c) / 3
+    ) : (sin(i / 318) / 2 + .5 + sin(t) / 2 + .5)
+),
+    fronds:`color = x => abs((x/(2*PI)+1) % 2 - 1) * 255;
 
-renderTile = tile => range(tileSize).forEach(x =>{
-  let cells2 = cellulate()
-  tile.putImageData(cells2Img(cells), 0, x)
-  cells = cells2
-}),
+(a, b, c, i) =>{
+    let s = a + b + c, r = 10, ri = 1/(2*r+1),
+        avg = cell_neighbors(r,i).reduce((x,y)=>x+y)*ri,
+        w = sin(avg)**4 + sin(avg/2)*.3 + .3
+    return (
+        (.333 - sin(s)*.2)*a + .333*b +
+        (.333 + sin(s)*.2 + max(.002, w*.01))*c
+    ) % (4*PI)
+}`,
+    'custom':false
+}
 
-$ = q => document.querySelector(q),
-$$ = (q, fn)=>{
+var rule = rules.triangles, width, cells, t = 0, neighbors = i =>
+    [ cells[i > 0 ? i - 1 : width - 1], cells[i], cells[(i + 1) % width], i ]
+var cellulate = ()=>{
+    t += 1
+    return cells.map( (x, i) => rule(...neighbors(i)) )
+}
+
+var draw, tiles, tile_size = 100, tile_margin = 0, tile_offset = 0, go = 1
+var render = ()=>{
+    tiles.forEach((x, i)=> draw.putImageData(x.getImageData(
+        0, 0, width, tile_size), 0, i * tile_size - tile_offset))
+    tile_offset += 1
+    if(go) setTimeout(()=> requestAnimationFrame(render), 25)
+    if(tile_offset > tile_size - tile_margin){
+        render_tile(tiles[0])
+        tiles.push(tiles.shift())
+        tile_offset = 0
+    }
+}, render_tile = tile => range(tile_size).forEach(x =>{
+    let cells2 = cellulate()
+    tile.putImageData(cells2img(cells), 0, x)
+    cells = cells2
+})
+
+var $ = q => document.querySelector(q)
+var $$ = (q, fn)=>{
     let els = document.querySelectorAll(q)
     if(fn) els.forEach(fn)
     return els
-},
+}
  
-ruleName = 'triangles', reset_rule = ()=>{
-  ruleName = $('#rules').value
-  rule = rules[ruleName]
-  $('#rule').value = rule.toString()
-},
-cell_reset = i =>{ cells = new Float32Array([
-  ()=> range(0, 1, 1/width),
-  ()=> range(0, 1, 2/width).concat(range(0, 1, 2/width).reverse()),
-  ()=> range(width).map(Math.random),
-  ()=> {
-      let l = Array(95).fill(0), out = []
-      l = l.concat([1,1,1,1,1])
-      while(out.length < width) out = out.concat(l)
-      return out
-  }
-][i]()) },
-toggles, play_pause = ()=>{
-  toggles.forEach(el => el.classList.remove('on'))
-  toggles[go+0].classList.add('on')
-  go = !go
-  if(go) render()
-},
-initUI = ()=>{
-  Object.keys(rules).forEach(v => {
-    let el = document.createElement('option')
-    el.value = v; el.innerText = v
-    if(v == ruleName) el.selected = true;
-    $('#rules').appendChild(el)
-  })
-  reset_rule()
-  $('#rules').onchange = reset_rule
-  $('#set_rule').onclick = reset_rule
-  $('#sel_reset').onchange = ()=> cell_reset($('#sel_reset').value)
-  $('#reset').onclick = ()=> cell_reset($('#sel_reset').value)
-  toggles = $$('.toggle', el => el.onclick = play_pause)
-  $('#rule').onkeyup = ()=>{
-    let f = 0
-    try {
-      f = eval($('#rule').value)
-      f(0, 1, 2)
-    } catch( ex ){
-      $('#error').innerText = ex.message
+var rule_id = 'triangles', rule_set = (k, src)=>{
+    if(rules[k]){
+        rule_id = $('#rules').value = k
+        rule = rules[rule_id]
+        $('#rule').value = rule.toString()
+        if(typeof rule == 'string') rule = eval(rule)
+    } else if(src){
+        let f = null
+        try {
+            f = eval(src)
+            f(0, 1, 2, 0)
+        } catch( ex ){
+            $('#error').innerText = ex.message
+        }
+        if(f && f != rule){
+            rule = f
+            $('#error').innerText = ''
+            $('#rules').value = 'custom'
+        }
+        return src
     }
-    if(f){
-      rule = f
-      $('#error').innerText = ''
-    }
-  }
-},
+}
+var resets = {
+    tri:()=> range(1, 2.999, 2/width).map(v => abs(v % 2 - 1)),
+    rand:()=> range(width).map(random),
+    saw:()=> range(0, 1, 1/width),
+    dots:()=>{
+        let l = Array(95).fill(0), out = []
+        l = l.concat([1,1,1,1,1])
+        while(out.length < width) out = out.concat(l)
+        return out
+    },
+    dot:()=>{
+        let y = Array(width/2 - 1).fill(0)
+        return y.concat(1).concat(y)
+    },
+    custom:()=> [0,0,1,1,0,0]
+}, cell_reset = k =>{
+    cells = new Float32Array(width)
+    cells.set(resets[k]())
+}
+var toggles, init_id, initUI = ()=>{
+    build_select(rules, $('#rules'), k => k == rule_id)
+    let el = $('#sel_reset')
+    build_select(resets, el, k => k == el.value)
 
-height, init = ()=>{
-  let canvas = $('canvas')
-  draw = canvas.getContext('2d')
-  width = canvas.width
-  height = canvas.height
-  cell_reset(0)
-  tiles = range( Math.ceil(height / (tileSize - tileMargin)) + 1
-    ).map( x => buff(width, tileSize) )
-  tiles.forEach(renderTile)
+    $('#rules').onchange = ()=> rule_set($('#rules').value)
+    $('#set_rule').onclick = ()=> rule_set($('#rules').value)
+    $('#sel_reset').onchange = ()=> cell_reset($('#sel_reset').value)
+    $('#reset').onclick = ()=> cell_reset($('#sel_reset').value)
+    toggles = $$('.toggle', el => el.onclick = play_pause)
+    $('#rule').onkeyup = ()=> rule_set(0, $('#rule').value)
 
-  initUI()
-  render()
-},
-
-cellColor = x => Math.abs(((x+1)/2 % 1 - .5) * 510),
-cells2Img = cells =>{
-  let img = new ImageData(width, 1)
-  cells.forEach( (x, i) =>{
-    [0,1,2].forEach(o => img.data[i*4+o] = cellColor(x) )
-    img.data[i*4+3] = 255
-  })
-  return img
-},
-
-range = (start, end, step=1) =>{
-  if( end === undefined ){ end = start; start = 0 }
-  for(var l = []; start < end; start += step) l.push(start)
-  return l
-},
-
-buff = (width, height) =>{
-  let canvas = document.createElement('canvas')
-  canvas.width = width; canvas.height = height
-  return canvas.getContext('2d')
+    init_id = $('#sel_reset').value = params.get('init_id') || 'tri'
+    let rule_code = params.get('rule')
+    if(rule_code) $('#rule').value = rule_set(0, rule_code)
+    else rule_set(params.get('rule_id'))
+}, loc_update = ()=>{
+    params.set('init_id', $('#sel_reset').value)
+    rule_id = $('#rules').value
+    params.set('rule_id', rule_id)
+    if(rules[rule_id] == $('#rule').value) params.delete('rule')
+    else params.set('rule', $('#rule').value)
+    window.location.search = params
+}, play_pause = ()=>{
+    toggles.forEach(el => el.classList.remove('on'))
+    toggles[go+0].classList.add('on')
+    go = !go
+    if(go) render()
+}, build_select = (src, target, sel_fn)=>{
+    target.innerHTML = ''
+    Object.keys(src).forEach(v =>{
+        let el = document.createElement('option')
+        el.value = v; el.innerText = v
+        if(sel_fn(v)) el.selected = true;
+        target.appendChild(el)
+    })
 }
 
+var params = new URLSearchParams(window.location.search)
+var height, init = ()=>{
+    let canvas = $('canvas')
+    draw = canvas.getContext('2d')
+    width = canvas.width
+    height = canvas.height
+    
+    initUI()
+    cell_reset(init_id)
+    tiles = range( ceil(height / (tile_size - tile_margin)) + 1
+        ).map( x => buff(width, tile_size) )
+    tiles.forEach(render_tile)
+    render()
+}
+
+var color = x => abs((x+1) % 2 - 1) * 255
+var cells2img = cells =>{
+    let img = new ImageData(width, 1)
+    cells.forEach( (x, i) =>{
+        [0,1,2].forEach(o => img.data[i*4+o] = color(x) )
+        img.data[i*4+3] = 255
+    })
+    return img
+}
+
+var range = (start, end, step=1) =>{
+    if( end === undefined ){ end = start; start = 0 }
+    for(var l = []; start < end; start += step) l.push(start)
+    return l
+}
+
+var buff = (width, height) =>{
+    let canvas = document.createElement('canvas')
+    canvas.width = width; canvas.height = height
+    return canvas.getContext('2d')
+}
+
+var cell_neighbors = (r, i)=>{
+    y = new Float32Array(r * 2 + 1)
+    y0 = cells.slice(-10).slice(0, y.length)
+    y1 = cells.slice(0, y.length - y0.length)
+    y.set(y0)
+    y.set(y1, y0.length)
+	return y
+}
 </script>
 <style>
 
 body { margin:0; height:100%; }
 body > * { position:absolute; top:0; left:0; }
 canvas { width:100%; height:100%; }
-textarea { font-size:large; font-family:monospace; width:44em; height:7em;
+textarea { font-size:large; font-family:monospace; width:44em; height:8em;
   background:none; }
 button { vertical-align:middle; font-size:larger; }
 .toggle { display:none; }
 .toggle.on { display:inline-block; width:3em; }
+.margin-r { margin-right:3em; }
 #ui {
   margin:2em; padding:1em;
   font-family:sans-serif;
@@ -177,27 +227,26 @@ button { vertical-align:middle; font-size:larger; }
 
 </style>
 </head>
-<body onload='init()'>
+<body>
 <!-- <img src='sky.jpg'> -->
 <canvas width='1000' height='700'></canvas>
 <div id='ui'>
   <textarea id='rule'>
   </textarea><br>
 
-  <button id='set_rule'>change rule:</button> <select id='rules'>
-  </select> &nbsp;
+  <span id='error'></span><br>
 
-  <button id='pause' class='toggle on'>stop</button>
-  <button id='play' class='toggle go'>go</button> &nbsp;
+  <button id='set_rule'>change rule:</button>
+  <select id='rules' class='margin-r'></select>
 
-  <button id='reset'>reset:</button> <select id='sel_reset'>
-    <option value='0'>gradient
-    <option value='1'>mirrored gradient
-    <option value='2'>random
-    <option value='3'>dots
-  </select> &nbsp; &nbsp;
+  <button id='pause' class='toggle on margin-r'>stop</button>
+  <button id='play' class='toggle go margin-r'>go</button>
 
-  <span id='error'></span>
+  <button id='reset'>reset:</button>
+  <select id='sel_reset' class='margin-r'></select>
+
+  <button id='link' onclick='loc_update()'>&lt;&gt;</button>
 </div>
+<script>init()</script>
 </body>
 </html>
