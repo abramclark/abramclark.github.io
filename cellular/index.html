@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src='https://code.jquery.com/jquery-3.1.1.slim.min.js'></script>
 <script>
 
 let rules = {
@@ -63,13 +62,20 @@ renderTile = tile => range(tileSize).forEach(x =>{
   tile.putImageData(cells2Img(cells), 0, x)
   cells = cells2
 }),
- 
-ruleName = 'triangles', rule_set = ()=>{
-  ruleName = $('#rules').val()
-  rule = rules[ruleName]
-  $('#rule').val(rule.toString())
+
+$ = q => document.querySelector(q),
+$$ = (q, fn)=>{
+    let els = document.querySelectorAll(q)
+    if(fn) els.forEach(fn)
+    return els
 },
-cell_reset = [
+ 
+ruleName = 'triangles', reset_rule = ()=>{
+  ruleName = $('#rules').value
+  rule = rules[ruleName]
+  $('#rule').value = rule.toString()
+},
+cell_reset = i =>{ cells = new Float32Array([
   ()=> range(0, 1, 1/width),
   ()=> range(0, 1, 2/width).concat(range(0, 1, 2/width).reverse()),
   ()=> range(width).map(Math.random),
@@ -79,11 +85,11 @@ cell_reset = [
       while(out.length < width) out = out.concat(l)
       return out
   }
-].map(f => ()=> cells = new Float32Array(f())),
-play_pause = ()=>{
-  let buttons = $('.button').removeClass('on')
-  buttons.eq(go).addClass('on')
-  go = Math.abs(1 - go)
+][i]()) },
+toggles, play_pause = ()=>{
+  toggles.forEach(el => el.classList.remove('on'))
+  toggles[go+0].classList.add('on')
+  go = !go
   if(go) render()
 },
 initUI = ()=>{
@@ -91,33 +97,35 @@ initUI = ()=>{
     let el = document.createElement('option')
     el.value = v; el.innerText = v
     if(v == ruleName) el.selected = true;
-    $(el).appendTo('#rules')
+    $('#rules').appendChild(el)
   })
-  rule_set()
-  $('#rules').on('change', rule_set)
-  $('#reset').on( 'change', ()=> cell_reset[$('#reset').val()]() )
-  $('.button').on('click', play_pause)
-  $('#rule').on('keyup', ()=>{
+  reset_rule()
+  $('#rules').onchange = reset_rule
+  $('#set_rule').onclick = reset_rule
+  $('#sel_reset').onchange = ()=> cell_reset($('#sel_reset').value)
+  $('#reset').onclick = ()=> cell_reset($('#sel_reset').value)
+  toggles = $$('.toggle', el => el.onclick = play_pause)
+  $('#rule').onkeyup = ()=>{
     let f = 0
     try {
-      f = eval($('#rule').val())
+      f = eval($('#rule').value)
       f(0, 1, 2)
     } catch( ex ){
-      $('#error').text(ex.message)
+      $('#error').innerText = ex.message
     }
     if(f){
       rule = f
-      $('#error').text('')
+      $('#error').innerText = ''
     }
-  })
+  }
 },
 
 height, init = ()=>{
-  let canvas = $('canvas')[0]
+  let canvas = $('canvas')
   draw = canvas.getContext('2d')
   width = canvas.width
   height = canvas.height
-  cell_reset[0]()
+  cell_reset(0)
   tiles = range( Math.ceil(height / (tileSize - tileMargin)) + 1
     ).map( x => buff(width, tileSize) )
   tiles.forEach(renderTile)
@@ -151,29 +159,21 @@ buff = (width, height) =>{
 </script>
 <style>
 
-body { margin: 0; height: 100%; }
-body > * { position: absolute; top: 0; left: 0; }
-canvas { width: 100%; height: 100%; }
-textarea {
-  font-size: large;
-  font-family: monospace;
-  width: 44em; height: 7em;
-  background: none;
-}
-.button {
-  cursor: default;
-  display: none;
-  vertical-align: middle;
-  font-size: larger;
-}
-.button.on { display: inline-block; }
+body { margin:0; height:100%; }
+body > * { position:absolute; top:0; left:0; }
+canvas { width:100%; height:100%; }
+textarea { font-size:large; font-family:monospace; width:44em; height:7em;
+  background:none; }
+button { vertical-align:middle; font-size:larger; }
+.toggle { display:none; }
+.toggle.on { display:inline-block; width:3em; }
 #ui {
-  margin: 2em; padding: 1em;
-  font-family: sans-serif;
-  background-color: rgba(255,255,255,.9);
-  position: fixed;
+  margin:2em; padding:1em;
+  font-family:sans-serif;
+  background-color:rgba(255,255,255,.9);
+  position:fixed;
 }
-#error { color: red; }
+#error { color:red; }
 
 </style>
 </head>
@@ -184,13 +184,13 @@ textarea {
   <textarea id='rule'>
   </textarea><br>
 
-  <strong>change rule:</strong> <select id='rules'>
+  <button id='set_rule'>change rule:</button> <select id='rules'>
   </select> &nbsp;
 
-  <span id='pause' class='button on'>&#9208;</span>
-  <span id='play' class='button'>&#9654;</span> &nbsp;
+  <button id='pause' class='toggle on'>stop</button>
+  <button id='play' class='toggle go'>go</button> &nbsp;
 
-  <strong>reset:</strong> <select id='reset'>
+  <button id='reset'>reset:</button> <select id='sel_reset'>
     <option value='0'>gradient
     <option value='1'>mirrored gradient
     <option value='2'>random
