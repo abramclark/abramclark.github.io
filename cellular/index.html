@@ -39,13 +39,13 @@ var rules = {
     fronds:`color = x => abs((x/(2*PI)+1) % 2 - 1) * 255;
 
 (a, b, c, i) =>{
-    let s = a + b + c, r = 10, ri = 1/(2*r+1),
+    let s = a + b + c, r = 10, ri = 1/(2*r+1), depth = 8,
         avg = cell_neighbors(r,i).reduce((x,y)=>x+y)*ri,
         w = sin(avg)**4 + sin(avg/2)*.3 + .3
     return (
         (.333 - sin(s)*.2)*a + .333*b +
-        (.333 + sin(s)*.2 + max(.002, w*.01))*c
-    ) % (4*PI)
+        (.333 + sin(s)*.2 + max(.0015, w*.01))*c
+    ) % (depth*PI)
 }`,
     'custom':false
 }
@@ -58,10 +58,10 @@ var cellulate = ()=>{
 }
 
 var draw, tiles, tile_size = 100, tile_margin = 0, tile_offset = 0, go = 1
-var render = ()=>{
+var speed = 1.5, render = ()=>{
     tiles.forEach((x, i)=> draw.putImageData(x.getImageData(
         0, 0, width, tile_size), 0, i * tile_size - tile_offset))
-    tile_offset += 1
+    tile_offset += speed
     if(go) setTimeout(()=> requestAnimationFrame(render), 25)
     if(tile_offset > tile_size - tile_margin){
         render_tile(tiles[0])
