@@ -1,4 +1,4 @@
-<!-- © 2019 Abram Clark All Rights Reserved -->
+<!-- © 2024 Abram Clark All Rights Reserved -->
 <!DOCTYPE HTML><meta charset="utf-8"/>
 <html>
 <head>
@@ -8,10 +8,8 @@
 *, td { font-family:Helvetica;  }
 a { text-decoration:none; font-weight:bold; color:#116; }
 a:visited { color:#616; }
-li { margin-bottom:1em; }
 p { margin:.5em 0; }
 body { margin:0; }
-ul { list-style:none; padding:0; }
 
 .h1 { font-size:xx-large; font-weight:bold;
     line-height:1.5em; }
@@ -22,16 +20,15 @@ ul { list-style:none; padding:0; }
 
 .box {
     vertical-align:top;
-    text-align:right;
     display:inline-block;
     background-color:#FFFD;
     margin:4em 1em 0 4em;
     padding:1em;
-    line-height:1.5em;
 }
-.box .small {
+.small {
     font-size:small;
     width:13em;
+    line-height:1.5em;
 }
 
 .content {
@@ -41,38 +38,37 @@ ul { list-style:none; padding:0; }
     padding:0 2em 2em 2em;
     background-color:#FFFD;
 }
+.item { margin-bottom:1em; }
+.item li { margin-top:.5em; }
 
-.bg { position:fixed; width:100%; height:100%; top:0; left:0; }
+.bg { position:absolute; width:100%; top:0; left:0; }
 .fg { position:relative; }
 
 </style>
 </head>
-<body>
+<body onload='init()'>
 <canvas width='1000' height='700' class='bg'></canvas>
 <div class='fg'>
 
 <div class='box'>
   <div class='h1'>Abram Clark</div>
-  <div class='h3'>Software engineer</div><br>
+  <div class='h3'>Senior Software Engineer</div><br>
   
-  <a href='mailto:a@newhive.com'>a@newhive.com</a><br>
+  <a href='mailto:quuxman@gmail.com'>quuxman@gmail.com</a><br>
   206-395-9052<br>
-  Oakland, CA 94606<br><br>
-  
+  Shoreline, WA<br>
   <a href='https://www.linkedin.com/in/abramclark'>linkedin.com</a><br>
-  <a href='https://twitter.com/AbramClark'>twitter.com</a>
 
   <strong class='h2'>For Fun</strong>
-  <span class='small'>
-    Music, piano playing</br>
-    Bicycling</br>
-    Performance arts:<br>
-    (juggling, unicycling,<br>
-    slacklining, fire spinning)</br>
-    Electronics, building ebikes</br>
-    Digital art</br>
-    Industrial design</br>
-  </span>
+  <span class='small'><ul>
+    <li>Music; playing piano and trombone
+    <li>Bicycling
+    <li>Performance arts:<br>
+      (juggling, unicycling,<br>slacklining, fire spinning)
+    <li>Electronics, building ebikes
+    <li>Digital art (e.g. this background)
+    <li>CAD design and 3D printing
+  </ul></span>
 </div>
 
 <div class='content'>
@@ -81,126 +77,111 @@ ul { list-style:none; padding:0; }
 high impact domain.</p>
 
 <strong class='h2'>Work Experience</strong>
-<ul>
-  <li>
-    <div class='h3'>Backend Software Engineer</div>
-    <div class='h4'>
-      EasyPost<br>
-      April 2017 - present
-    </div>
-    Developing API services with Python and MySQL.
-  </li>
-  <li>
-    <div class='h3'>Cofounder, CTO</div>
-    <div class='h4'>
-      NewHive<br>
-      August 2009 - 2016
-    </div>
-    Conceived of and created a social media creativity platform. I was
-    responsible for UX design, architecture, the great majority of
-    programming, hiring technical team, management, and some business
-    development.  Developed full stack using Python, MongoDB,
-    JavaScript, AWS, Git, and Google Analytics. The core of this was a
-    sophisticated web based drag and drop design tool, coupled with a
-    social frame that handled tagging, feeds, and comments. It was
-    adopted by thousands of users and by people all over the world
-    (anylytics shows 115 countries), but we were unable to gain
-    business traction.
-  </li>
-  <li>
-    <div class='h3'>Lead Software Engineer</div>
-    <div class='h4'>
-      Internet Community &amp; Entertainment Corp.<br>
-      2006 - 2008
-    </div> 
-    Designed and developed backend of auction system using PHP and
-    PostgreSQL, including test framework to verify consistency of
-    auction transactions. Developed and refactored UI code in
-    JavaScript, HTML, and CSS.
-  </li>
-  <li>
-    <div class='h3'>TA for UWEO Web Technology Solutions course</div>
-    <div class='h4'>
-      ISchool, University of Washington<br>
-      2003 - 2007
-    </div>
-    Designed curriculum for emerging front-end web technologies (e.g.
-    JQuery and AJAX methodologies). Gave lectures on JavaScript.
-    Helped students 1 on 1 with assignments and final projects in the
-    3 class course, which also included server side programming and
-    database design.
-  </li>
-  <li>
-    <div class='h3'>Developer</div>
-    <div class='h4'>
-      ISchool, University of Washington<br>
-      2003 - 2006
-    </div>
-    Developed and refactored department tools using ASP.NET, C#, and
-    MS SQL Server. Linux system administration for faculty research
-    projects.
-  </li>
-</ul>
+<div class='item'>
+  <div class='h3'>Backend Senior Software Engineer</div>
+  <div class='h4'>
+    EasyPost<br>
+    April 2017 - present
+  </div>
+  Developing reliable API services with Python, MySQL, Rust, Ruby, Kafka, and many other tools.
+  <ul>
+    <li>Led the design and implementation of an in-house address verification system that
+      replaced a slow, unreliable, and expensive external API call. The final service was
+      implemented in Rust, runs 50x faster and has had no service level outages, and
+      resulted in large annual savings.
+    <li>Designed and implemented multiple extractions from an overloaded monolith and DB.
+      They were completed on time with no break in service or changes in API behavior.
+      This included rigorous testing and careful migrations.
+    <li>Participated in design and implementation of the back end for new API products:
+      carbon offsets, insurance purchases, and analytics tools for customers. The last
+      also powers a web based analytics tool, and continues to perform well for real-time
+      queries as we grow.
+    <li>Teach architecture, schema design, and language concepts to junior developers
+  </ul>
+</div>
 
+<div class='item'>
+  <div class='h3'>Cofounder, CTO</div>
+  <div class='h4'>
+    NewHive<br>
+    August 2009 - 2016
+  </div>
+  Conceived of and created a social media creativity platform.
+  <ul>
+    <li>My responsibilities: UX design, architecture, the majority of programming, hiring
+      technical team, management, and some business development.
+    <li>Developed full stack using Python, MongoDB, JavaScript, AWS, Git, and Google
+      Analytics. The core of this was a sophisticated web based drag and drop design
+      tool, coupled with a social frame that handled tagging, feeds, and comments.
+    <li>Managed and grew the platform to thousands of international users (analytics shows
+      115 countries).
+  </ul>
+</div>
+
+<div class='item'>
+  <div class='h3'>Lead Software Engineer</div>
+  <div class='h4'>
+    Internet Community &amp; Entertainment Corp.<br>
+    2006 - 2008
+  </div> 
+  <ul>
+    <li>Designed and developed backend of auction system using PHP and PostgreSQL, including
+      test framework to verify consistency of auction transactions.
+    <li>Developed and refactored UI code in JavaScript, HTML, and CSS.
+  </ul>
+</div>
+
+<div class='item'>
+  <div class='h3'>TA for UWEO Web Technology Solutions course</div>
+  <div class='h4'>
+    ISchool, University of Washington<br>
+    2003 - 2007
+  </div>
+  <ul>
+    <li>Designed curriculum for emerging front-end web technologies (e.g. JQuery and AJAX
+      methodologies).
+    <li>Gave lectures on JavaScript.
+    <li>Helped students one on one with assignments and final projects in the 3 class
+      course, which also included server side programming and database design.
+  </ul>
+</div>
+
+<div class='item'>
+  <div class='h3'>Developer</div>
+  <div class='h4'>
+    ISchool, University of Washington<br>
+    2003 - 2006
+  </div>
+  <ul>
+    <li>Developed and refactored department tools using ASP.NET, C#, and MS SQL Server.
+    <li>Linux system administration for faculty research projects.
+  </ul>
+</div>
+
+<br><br>
 <strong class='h2'>About Me</strong>
-<p>My answer to "what're you going to be when you grow up" started out
-as "inventor", then later at age 6 became "scientist". In middle
-school I explored books and many articles on philosophy, microbiology,
-and subatomic physics. In my early teens, realizing real scientific
-research is extremely slow and tedious, I developed a strong interest
-in consciousness and artificial intelligence, complimented by an
-enthusiastic pursuit of programming which I started in 5th grade.</p>
+<p>My answer to "what're you going to be when you grow up" started out as "inventor", then
+later at age 6 became "scientist". In middle school I explored books and many articles
+on philosophy, microbiology, and subatomic physics. In my early teens, realizing real
+scientific research is extremely slow and tedious, I developed a strong interest in
+consciousness and artificial intelligence, complimented by an enthusiastic pursuit of
+programming which I started in 5th grade.</p>
 
-<p>In my early 20s it became clear to me that strong AI, if achieved
-at all, would likely result in a totally opaque process that, at best,
-would be a poor and morally questionable mimic of a human mind. I
-decided to create a far more useful technology; intuitive software and
-development tools. As software subsumes more and more of our culture
-and society, people increasingly rely on software engineers and
-designers. Along with all engineers, I'm faced with the difficulties
-of working with the increasingly complex tools we are becoming
-increasingly dependent on.</p> 
+<p>In my early 20s it became clear to me that strong AI, if achieved at all, would likely
+result in a totally opaque process that, at best, would be a poor and morally questionable
+mimic of a human mind. I decided to create a far more useful technology; intuitive
+software and development tools. As software subsumes more and more of our culture and
+society, people increasingly rely on software engineers and designers. Along with all
+engineers, I'm faced with the challenges of working with the increasingly complex tools we
+are becoming increasingly dependent on.</p>
 
-<p>More importantly, humanity's survival is becoming dependent on the
-majority of us making decisions based on a complex systems level
-understanding of our natural environment and economies.</p>
+<p>More importantly, humanity's survival is becoming dependent on us making the right
+decisions based on a complex systems level understanding of our natural environment and
+economies. In short, I'm most excited about tools for spreading accurate information,
+understanding complex systems, and teaching. Building these tools is the most positively
+impactful thing I can imagine.</p>
 
-<p>In short, I'm most excited about tools for understanding complex
-systems and education, and building these is the most important thing
-I could possibly do.</p>
-
-<strong class='h2'>Education</strong>
-<p>The foundation of my math, science, and technology came from my
-Dad.  We had many "science projects" which eventually led to building
-countless circuits. Some noteable examples I remember were a tesla
-coil, an amplified oscilator switched by a photo diode with a tuneable
-threshold (which I designed), and finally for a 5th grade science
-project: a 4 bit binary adder composed only from ~50 bare CMOS logic
-gates, along with an explanation of this being a small but critical
-component of an arethmitic logic unit in a CPU.</p> 
-
-<p>As a self-taught programmer, I learned through immersion on a home
-PC starting at age 9 with QBASIC. Currently I'm a bit baffled about
-how this happened, as my family had no Internet and no conception of
-programming. I think my brother and I simply learned from the manual
-and various DOS programs that came with our 486 PC. Eventually
-realizing it wasn't possible to create smooth game graphics with
-QBASIC, I moved on to C, learning from the Borland C manual. After
-being introduced to the web at age 12, I immediately moved to Perl and
-then JavaScript.</p>
-
-<p>In high school I took every available tech class, but
-there was no programming curriculum. I created 2 years of material
-for two independent studies, one with my physics and chemistry
-teacher, the other with my computer electronics teacher.</p>
-
-<p>From there I started my working education at University of
-Washington, learnig from faculty and the IT department. For every
-career move I've found a role that stretches my skills and knowledge.
-I also actively research developments in the industry and in
-programming research.</p><br><br>
-
-<p class='small'>&copy; 2019 Abram Clark All Rights Reserved</p>
+<br><br><span class='small'>&copy; 2024 Abram Clark All Rights Reserved</span>
 </div>
 
 </div>
@@ -230,7 +211,7 @@ cellulate = ()=>{
 },
 
 draw, tiles, tileSize = 100, tileMargin = 0, tileOffset = 0, go = 1,
-slide_count = 0, render = ()=>{
+slide_count = 12, render = ()=>{
   tiles.forEach( (x, i) => draw.putImageData(
     x.getImageData(0, 0, width, tileSize), 0, i * tileSize - tileOffset ) )
   tileOffset += 1
@@ -240,7 +221,7 @@ slide_count = 0, render = ()=>{
     tiles.push(tiles.shift())
     tileOffset = 0
     slide_count += 1
-    rule = rules[Math.floor(slide_count / tiles.length) % 2]
+    rule = rules[Math.floor(2 * slide_count / tiles.length) % 2]
   }
 },
 
@@ -265,8 +246,8 @@ cell_reset = [
 height, init = ()=>{
   let canvas = document.getElementsByTagName('canvas')[0]
   draw = canvas.getContext('2d')
-  width = canvas.width = canvas.offsetWidth
-  height = canvas.height = width * canvas.offsetHeight / width
+  width = canvas.width = document.body.offsetWidth
+  height = canvas.height = document.body.offsetHeight
   cell_reset[3]()
   tiles = range( Math.ceil(height / (tileSize - tileMargin)) + 1
     ).map( x => buff(width, tileSize) )
@@ -295,9 +276,8 @@ buff = (width, height) =>{
   let canvas = document.createElement('canvas')
   canvas.width = width; canvas.height = height
   return canvas.getContext('2d')
-}
+};
 
-init()
 </script>
 </body>
 </html>
