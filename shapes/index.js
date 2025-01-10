@@ -10,10 +10,7 @@ var zip = (list1, list2)=>{
     return ret;
 };
 
-var cury = function(func){
-    var partial_args = Array.prototype.slice.call(arguments, 1);
-    return ()=> func.apply(null, partial_args.concat(arguments))
-}
+var cury = (func, ...partial_args)=> (...args)=> func.apply(null, partial_args.concat(args))
 
 
 // num tools
@@ -55,6 +52,11 @@ var palette_next = ()=>{
 }
 var palette_fill = ()=>{ d.fillStyle = palette_next() }
 var palette_stroke = ()=>{ d.strokeStyle = palette_next() }
+var palette0 = ()=>{
+    d.fillStyle = palette[0]
+    d.strokeStyle = palette[0]
+    palette_index = 0
+}
 
 var shape = (n, r)=>{
     if(!r) r = 100;
@@ -82,11 +84,11 @@ var clear = ()=>{
     d.clearRect(-500,-500,1000,1000)
 }
 
-var gfx = draw =>{ return function(){
+var gfx = draw => (...args)=>{
     d.save()
-    draw.apply(null, arguments)
+    draw.apply(null, args)
     d.restore()
-} }
+}
 
 var rotate = gfx((draw, a)=>{ d.rotate(a); draw() })
 var trans = gfx((draw, x, y)=>{ d.translate(x, y); draw() })
@@ -128,6 +130,7 @@ var hline = l =>{
   d.beginPath()
   d.moveTo(0, 0)
   d.lineTo(l, 0)
+  palette_stroke()
   d.stroke()
 }
 
@@ -145,21 +148,24 @@ var slide = (draw, n, width)=>{
 
 // animate tools
 
-animate = function(draw){
+function animate(draw){
     animate.animations.push(draw)
     animate.t0 = + new Date()
     if(animate.animations.length == 1) animate.frame()
 }
-animate.frame = function(){
+animate.frame = ()=>{
     t = (+ new Date() - animate.t0) / 1000
     for(i in animate.animations) animate.animations[i]()
-    if(animate.animations.length) window.requestAnimationFrame(animate.frame)
+    if(animate.animations.length) animate.frame_id = window.requestAnimationFrame(animate.frame)
 }
-animate.stop = function(draw){
+animate.stop = draw =>{
     if(draw) animate.animations.splice(animate.animations.indexOf(draw), 1)
     else animate.animations = []
+    // prevent parallel animation loops
+    if(!animate.animations.length && animate.frame_id) cancelAnimationFrame(animate.frame_id)
 }
 animate.animations = []
+animate.frame_id = 0
 
 var graph = fn =>{
     var width = 10, height = width * (h / w),
@@ -195,18 +201,7 @@ var resize = canvas =>{
     d.save()
 }
 
-var init = ()=>{
-    canvas = document.getElementsByTagName('canvas')[0]
-    d = canvas.getContext('2d')
-    window.onresize = ()=> resize(canvas)
-    window.onresize()
-
-    palette = [
-        [5  , 180, 20 , 0.2],
-        [40 , 10 , 240, 0.2],
-    ]
-    color = rgb8
-
+var palette_set_bright = ()=>{
     palette = [
         [255, 0  , 0  , .2],
         [0  , 0  , 255, .2],
@@ -215,55 +210,84 @@ var init = ()=>{
         [0  , 255, 255, .2],
     ]
     color = rgb8
-
+}, palette_set_2tone = ()=>{
     palette = [
-        [0.807843137254902, 0.3607843137254902, 0.0, 0.06],
-        [0.12549019607843137, 0.2901960784313726, 0.5294117647058824, 0.06],
-        [0.3607843137254902, 0.20784313725490197, 0.4, 0.06],
-        [0.5607843137254902, 0.34901960784313724, 0.00784313725490196, 0.06],
-        [0.6431372549019608, 0.0, 0.0, 0.06],
+        [5  , 180, 20 , 0.2],
+        [40 , 10 , 240, 0.2],
+    ]
+    color = rgb8
+}, palette_set_sunset = ()=> {
+    palette = [
+        [0.807843137254902, 0.3607843137254902, 0.0, 0.2],
+        [0.12549019607843137, 0.2901960784313726, 0.5294117647058824, 0.2],
+        [0.3607843137254902, 0.20784313725490197, 0.4, 0.2],
+        [0.5607843137254902, 0.34901960784313724, 0.00784313725490196, 0.2],
+        [0.6431372549019608, 0.0, 0.0, 0.2],
     ]
     color = rgb
+}
 
-    //palette = [
-    //    [0.0744336569579288, 1.0, 0.403921568627451, 0.1],
-    //    [0.598705501618123, 0.6167664670658682, 0.32745098039215687, 0.1],
-    //    [0.7993197278911565, 0.3161290322580645, 0.303921568627451, 0.1],
-    //    [0.10283687943262411, 0.9724137931034483, 0.28431372549019607, 0.1],
-    //    [0.0, 1.0, 0.3215686274509804, 0.1],
-    //]
-    //color = hsl
+var init = ()=>{
+    canvas = document.getElementsByTagName('canvas')[0]
+    d = canvas.getContext('2d')
+    window.onresize = ()=> resize(canvas)
+    window.onresize()
+
+    palette_set_bright()
+    palette0()
+
+    init_ui()
+}
+
+var $ = q => document.querySelector(q)
+
+var build_select = (src, target, sel_fn)=>{
+    target.innerHTML = ''
+    Object.keys(src).forEach(v =>{
+        let el = document.createElement('option')
+        el.value = v; el.innerText = v
+        if(sel_fn(v)) el.selected = true;
+        target.appendChild(el)
+    })
+}
+
+var set_example = ()=>{
+    key = $('#examples').value
+    code = examples[key].trimStart()
+    $('#code').value = code
+    palette_set_bright()
+    clear()
+    run_code()
+}
+
+var run_code = ()=>{
+    animate.stop()
+    code = $('#code').value
+    $('#error').innerText = ''
+    try {
+        eval(code)
+    } catch(ex){
+        $('#error').innerText = ex.message
+    }
+}
+
+var init_ui = ()=>{
+    build_select(examples, $('#examples'), name => name == 'intro')
+    $('#examples').onchange = set_example
+    set_example()
+
+    $('#stop').onclick = ()=> animate.stop()    
+    $('#clear').onclick = ()=> clear()    
+    $('#run').onclick = run_code
 }
 
 
 // draw combinators
 
-var spar = (p, n, s) =>{
-    range(n).forEach(i =>{
-        rotate(()=> shape(s), pi / p ** i)
-        rotate(()=> shape(s), -pi / p ** i)
-    })
-}
-
-var square_spread = ()=>{
-    rotate(cury(swing, ()=> swing(cury(tri, 8, 1000), 8, 0), pi/8, 0, 2), pi/8)
-    swing(cury(lseg, 1000, 0), 8, 0);
-
-    spar4 = ()=> spar(2, 10, 4)
-    spar4()
-    swing(spar4, 4, 200);
-};
-
-swing_spread = (n, a) =>{
-    //rays(n)
-    sparn = ()=> spar(a, 10, n)
-    sparn()
-    swing(sparn, n, 200)
-}
-
-var rays = n =>{
-    rotate(()=> swing(()=> tri(n, 1000), n, 0, 30), pi/n)
-    swing(()=> lseg(1000, 0), n, 0)
+var star = (sides, slice, n) =>{
+    if(!n) n = slice
+    var a_step = 2 * pi / slice
+    range(n).forEach(i => rotate(()=> shape(sides), a_step * i))
 }
 
 var swing = (draw, slice, r, steps)=>{
@@ -276,195 +300,183 @@ var swing = (draw, slice, r, steps)=>{
     d.restore()
 }
 
-var swing_rec = (draw, scale, slice, r, l)=>{
+var swing_rec = (draw, scale, slice, r, l, steps)=>{
     if(l == 0) return
     swing(()=>{
         d.save()
         draw()
         d.scale(scale, scale)
-        swing_rec(draw, scale, slice, r, l - 1)
-        d.restore()
-    }, slice, r)
-}
-var swings_rec = (draw, scale, slice, r, steps, l)=>{
-    if(l == 0) return
-    swing(()=>{
-        d.save()
-        draw()
-        d.scale(scale, scale)
-        swings_rec(draw, scale, slice, r, steps, l - 1)
+        swing_rec(draw, scale, slice, r, l - 1, steps)
         d.restore()
     }, slice, r, steps)
 }
 
-// sketches
+var examples = {
+    intro: `
+// demo of a simple graphics library leveraging function composition
+shape(6)`,
 
-var plaidish = ()=>{
-    swing(cury(swing_spread, 4, 30), 4, 400)
-    scale(cury(swing_spread, 4, 30), 2)
-    scale(cury(swing_spread, 4, 30), .5)
+    swing: `
+// swing(draw_function, n_fold_symetry, radius, count)
+swing(cury(shape, 4), 6, 100)`,
+
+    squares_in_sixes: `
+// draw functions can of course be nested
+swing(()=> swing(()=> swing(()=> shape(4), 6, 100), 4, 200), 6, 400)`,
+
+    animation: `
+animate(()=>{
+  palette0()
+  clear()
+  swing(()=> rotate(()=> shape(4), t / 10), 6, 110)
+})`,
+
+    pentagon_mosaic: `
+// swing_rec(draw_function, scale, n_fold_symetry, radius, recursions, count_per_recursion)
+swing_rec(cury(shape, 5), 1, 5, 100, 5)`,
+
+    pentagon_circle: `
+var pentagon_circle = ()=>{
+  swing(cury(shape, 5), 21, 202)
+  swing(cury(shape, 5), 21, -402)
 }
-var hex_tri_spread_swing = ()=>{
-    scale(cury(swing_spread, 6, 30), 2)
-    swing_spread(3, 30)
-    swing(()=> scale(cury(swing_spread, 3, 30), .66), 6, 400)
+range(3).forEach(i => scale(pentagon_circle, 0.25 ** i))`,
+
+    tri_hex: `
+var trihex = ()=>{
+  swing(()=>{
+    swing(cury(shape, 6), 60, 100, 11)
+    d.rotate(pi)
+    swing(cury(shape, 6), 60, 100, 11)
+  }, 3, 200)
 }
+range(5).forEach(i => scale(cury(swing, trihex, 3, 400), 0.5 ** i))`,
+
+    jewels: `
+var n = 9
 
 var jewel = ()=>{
-    var jewel_1 = function(){
-        swing(function(){ shape(6) }, 9, 189);
-        swing(function(){ shape(6) }, 9, 195);
-        swing(function(){ shape(6) }, 9, 183);
+  swing(cury(shape, 6), n, 189)
+  swing(cury(shape, 6), n, 195)
+  swing(cury(shape, 6), n, 183)
 
-        swing(function(){ shape(4) }, 6, 85);
-        swing(function(){ shape(4) }, 6, 91);
-        swing(function(){ shape(4) }, 6, 79);
-    };
-
-    range(22).forEach(function(){ swing(function(){ tri(9, 800) }, 18, 0) });
-
-    jewel_1();
-
-    swing(function(){
-        d.save(); d.scale(.2,.2); d.rotate(pi/9); jewel_1(); d.restore();
-    }, 9, 354);
+  swing(cury(shape, 4), n, 85)
+  swing(cury(shape, 4), n, 91)
+  swing(cury(shape, 4), n, 79)
 }
 
-var penta_splay = a =>{
-    var splay = function(){
-        swing(function(){ shape(5) }, 18, 202)
-        swing(function(){ shape(5) }, 18, -402)
-    }
+range(22).forEach(cury(swing, cury(tri, n, 800), 18, 0))
 
-    d.strokeStyle = 'rgb(255,255,255)'
-    var dir = 1
-    range(5).forEach(i =>{
-        dir *= -1
+jewel()
+
+swing(cury(scale, cury(rotate, jewel, pi / (n % 2)), .2), n, 354)`,
+
+    btree: `
+palette_set_sunset()
+
+trans(()=>{
+  d.lineWidth = 5
+  rotate(cury(hline, 100), pi/2)
+  d.rotate(-2*pi/3)
+  swing_rec(()=>{
+    hline(150)
+    d.translate(150, 0)
+    d.rotate(-pi/6)
+  }, .75, 6, 0, 12, 2)
+}, 0, 250)`,
+
+    btree_flexing: `
+palette_set_sunset()
+
+animate(()=>{
+  clear()
+  palette0()
+  a = 2 + Math.abs(Math.tan(t/10))
+
+  trans(()=>{
+    d.lineWidth = 5
+    rotate(cury(hline, 100), pi/2)
+    d.rotate(-pi/2 - pi / a)
+    swing_rec(()=>{
+      hline(150)
+      d.translate(150, 0)
+      d.rotate(-pi/a)
+    }, .75, a, 0, 12, 2)
+  }, 0, 100)
+})`,
+
+    triangle_spin: `
+palette_set_sunset()
+
+var triangle_spin = o = {
+  a: 0,
+  spin: ()=> rotate(()=> shape(3), o.a),
+
+  draw: ()=>{
+    clear()
+    palette_index = 0
+    o.a = t / 10
+    swing_rec(o.spin, .5, 8, 300, 3)
+    swing_rec(o.spin, 1, 6, 100, 3)
+  },
+}
+
+animate(triangle_spin.draw)`,
+
+    wavy_spiral: `
+var wavy_spiral = o = {
+    wavy_circle: (freq, amp, phase, radius_center)=>{
+        var n = 0, r = ()=> radius_center + Math.sin(n * freq + phase) * amp
         d.save()
-        d.rotate(dir * a)
-        var scale = .25 ** i
-        d.scale(scale, scale)
-        splay()
-        d.restore()
-    })
-
-    d.restore()
-    d.save()
-};
-
-var penta_mosaic = ()=> swing(()=> swing(()=> swing(()=> swing(()=> swing(()=>
-    shape(5), 5, 100), 5, 100), 5, 100), 5, 100), 5, 100)
-
-var wild_ride = ()=> swing(()=> swing(()=> swing(()=>
-    shape(4), 6, 100), 4, 200), 6, 400)
-
-var tri_hexa = function(){
-    var triseg = function(){
-        swing(function(){
-            swing(function(){ shape(6) }, 60, 100, 11);
-            d.rotate(pi);
-            swing(function(){ shape(6) }, 60, 100, 11)
-        }, 3, 200);
-    };
-
-    triseg();
-    swing(function(){
-        d.translate(200,0);
-        d.rotate(-pi/3);
-        d.translate(400,0);
-        triseg();
-    }, 3, 0);
-};
-
-var btree = ()=>{
-    d.lineWidth = 3
-    d.save()
-    d.rotate(-pi/4)
-    swings_rec(()=>{
-        hline(30)
-        d.translate(30, 0)
-        d.rotate(-pi/4)
-    }, .75, 4, 0, 2, 5)
-    d.restore()
-}
-
-var btree_circle = ()=>{
-    d.lineWidth = 3
-    circle(40)
-    swing(()=> hline(40), 6, 40)
-    swing(()=> btree(), 6)
-}
-
-tritree = ()=>{ swings_rec(()=>{
-    d.rotate(-pi/2 + pi/10)
-    hline(30)
-    d.translate(30, 0)
-}, .75, 5, 0, 3, 4) }
-
-tritree_wheel = ()=>{
-    circle(24)
-    circle(26)
-}
-
-
-// animations
-
-var Sixes = ()=>{ var o = {
-    a: 0,
-    spin: ()=> rotate(()=> shape(3), o.a),
-
-    f: 0, in_sixes: ()=>{
-        o.f += 1
-        if(o.f % 2) return
-
-        o.a = t / 10
-        palette_index = (t / 20) % palette.length
-        swing_rec(o.spin, .5, 8, 300, 3)
-        swing_rec(o.spin, 1, 6, 100, 3)
-    },
-
-    start: ()=>{
-        palette_index = 1
-        palette_fill()
-        range(10).map(()=>{ d.fillRect(-500, -500, 1000, 1000) })
-        animate(o.in_sixes); return o
-    }
-}; return o }
-
-var Spiration = ()=>{ var o = {
-    wobble: (freq, amp, phase, radius_center)=>{
-        var n = 0, r = function(){
-            return radius_center + Math.sin(n * freq + phase) * amp; };
-        d.save();
-        d.beginPath();
+        d.beginPath()
         var step = 2*pi / ((radius_center * 2) + 50)
-        d.moveTo(r(), 0);
+        d.moveTo(r(), 0)
         for(; n <= 2*pi; n += step){
-            d.lineTo(r(), 0);
-            d.rotate(step);
+            d.lineTo(r(), 0)
+            d.rotate(step)
         }
-        d.closePath();
-        d.stroke();
-        palette_fill();
-        d.fill();
-        d.restore();
+        d.closePath()
+        d.stroke()
+        palette_fill()
+        d.fill()
+        d.restore()
     },
 
-    spirate: (bump, twist)=>{
-        range(80).reverse().forEach(function(i){
-            o.wobble(7, sin(i * pi/50) * bump, twist * i * pi/50, 10 + i * 5)
-        })
+    concentric_waves: (bump, twist)=>{
+        range(80).reverse().forEach(i => o.wavy_circle(7, sin(i * pi/50) * bump, twist * i * pi/50, 10 + i * 5))
     },
 
     bump: 40, new_bump: 40, twist: 0, rate: .2,
-    spiration: ()=>{
-        o.spirate(o.bump, o.twist)
+    draw: ()=>{
+        clear()
+        o.concentric_waves(o.bump, o.twist)
         o.twist += o.rate
         if(o.bump != o.new_bump){
             var diff = o.new_bump - o.bump
             o.bump += 1 * diff / Math.abs(diff)
         }
     },
+}
 
-    start: ()=>{ animate(o.spiration); return o }
-}; return o }
+animate(wavy_spiral.draw)`,
+}
+
+// sketches
+
+var square_spread = ()=>{
+    rotate(cury(swing, cury(swing, cury(tri, 8, 1000), 8, 0), pi/8, 0, 2), pi/8)
+    swing(cury(lseg, 1000, 0), 8, 0);
+
+    star4 = ()=>{
+        star(4, 60, 4)
+        star(4, -60, 4)
+    }
+    star4()
+    swing(star4, 4, 200);
+};
+
+var tritree = ()=>{ swing_rec(()=>{
+    d.rotate(-pi/2 + pi/10)
+    hline(30)
+    d.translate(30, 0)
+}, .75, 5, 0, 4, 3) }
