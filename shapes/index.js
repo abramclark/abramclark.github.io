@@ -446,7 +446,7 @@ var wavy_spiral = o = {
         range(80).reverse().forEach(i => o.wavy_circle(7, sin(i * pi/50) * bump, twist * i * pi/50, 10 + i * 5))
     },
 
-    bump: 40, new_bump: 40, twist: 0, rate: .2,
+    bump: 40, new_bump: 40, twist: 0, rate: .05,
     draw: ()=>{
         clear()
         o.concentric_waves(o.bump, o.twist)
