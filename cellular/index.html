@@ -63,7 +63,7 @@ var cellulate = ()=>{
     return cells.map((x, i) => rule(...neighbors(i)))
 }
 
-var draw, tiles, tile_size = 100, tile_margin = 0, tile_offset = 0, go = 1
+var draw, tiles, tile_size = 5, tile_margin = 0, tile_offset = 0, go = 1
 var speed = 1, render = ()=>{
     tiles.forEach((x, i)=> draw.putImageData(x.getImageData(
         0, 0, width, tile_size), 0, i * tile_size - tile_offset))
@@ -134,7 +134,6 @@ var toggles, init_id, initUI = ()=>{
     build_select(resets, el, k => k == el.value)
 
     $('#rules').onchange = ()=> rule_set($('#rules').value)
-    $('#set_rule').onclick = ()=> rule_set($('#rules').value)
     $('#sel_reset').onchange = ()=> cell_reset($('#sel_reset').value)
     $('#reset').onclick = ()=> cell_reset($('#sel_reset').value)
     toggles = $$('.toggle', el => el.onclick = play_pause)
@@ -220,16 +219,16 @@ body > * { position:absolute; top:0; left:0; }
 canvas { width:100%; height:100%; }
 textarea { font-size:large; font-family:monospace; width:44em; height:8em;
   background:none; }
-button { vertical-align:middle; font-size:larger; }
 .toggle { display:none; }
 .toggle.on { display:inline-block; width:3em; }
-.margin-r { margin-right:3em; }
+.margin-r { margin-right:1em; }
 #ui {
   margin:2em; padding:1em;
   font-family:sans-serif;
   background-color:rgba(255,255,255,.9);
   position:fixed;
 }
+#ui * { padding: 0; vertical-align:middle; }
 #error { color:red; }
 
 </style>
@@ -243,7 +242,7 @@ button { vertical-align:middle; font-size:larger; }
 
   <span id='error'></span><br>
 
-  <button id='set_rule'>change rule:</button>
+  change rule:
   <select id='rules' class='margin-r'></select>
 
   <button id='pause' class='toggle on margin-r'>stop</button>
@@ -252,7 +251,7 @@ button { vertical-align:middle; font-size:larger; }
   <button id='reset'>reset:</button>
   <select id='sel_reset' class='margin-r'></select>
 
-  <button id='link' onclick='loc_update()'>&lt;&gt;</button>
+  <button id='link' onclick='loc_update()'>&lt;link&gt;</button>
 </div>
 <script>init()</script>
 </body>
