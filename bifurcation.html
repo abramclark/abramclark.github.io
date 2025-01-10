@@ -2,55 +2,51 @@
 <html>
 <head>
 
-<script src='jquery.js'></script>
 <script>
-var zs, cs
+var zs, cs, width = 1200
+var $ = q => document.querySelector(q)
 
-function calc(){ $.map(range(1200), function(i){
-    zs[i] = zs[i] * zs[i] + cs[i]
-}) }
+var calc = ()=> range(width).map(i => zs[i] = zs[i] * zs[i] + cs[i])
 
 var c = 0
-function step(){ c++; calc(); draw(c); }
+var step = ()=>{ c++; calc(); draw(c); }
 
 var d, interval, run = ()=>{
-    cs = range(1200).map((v) => -v/600)
+    cs = range(width).map((v) => -v/600)
     console.log('oaeuaoeustaohuesth')
     d = document.getElementsByTagName('canvas')[0].getContext('2d')
     interval = setInterval(step, 100)
-    $('.button.clear').on('click', clear_canvas)
-    $('.button.zero').on('click', zero_zs)
-    $('.button.random').on('click', random_zs)
+    $('.button.clear').onclick = clear_canvas
+    $('.button.zero').onclick = zero_zs
+    $('.button.random').onclick = random_zs
     zero_zs()
-}, stop = function(){
+}, stop = ()=>{
     clearInterval(interval)
     $('.button').off('click')
 }
 
-var zero_zs = ()=>{ zs = $.map(range(1200), function(){return 0}) }
-var random_zs = ()=>{ zs = $.map(range(1200), function(){return Math.random()}) }
+var zero_zs = ()=>{ zs = range(width).map(()=> 0) }
+var random_zs = ()=>{ zs = range(width).map(()=> Math.random()) }
 
 var draw = (c)=>{
-    function yt(y){ return (y + 2) * 200 }
+    var yt = y => (y + 2) * 200
     d.beginPath()
     d.moveTo(0, yt(zs[0]))
-    $.map(range(1, 1200), function(i){ d.lineTo(i, yt(zs[i])) } )
+    range(1, width).map(i => d.lineTo(i, yt(zs[i])))
     d.strokeStyle = 'rgb(0,'+ (c % 256) + ',0)'
     d.stroke()
 }
 
 var clear_canvas = ()=>{
   d.fillStyle = 'rgb(255,255,255)'
-  d.clearRect(0,0,1200,800)
+  d.clearRect(0, 0, width, 800)
 }
 
-var range = function(){
-    // Similar to the python range() function
-    var L = arguments, start, stop, step, r = []
-    if (L.length == 1) start=0, stop=L[0], step=1
-    else start=L[0], stop=L[1], step=L[2] == null ? 1 : L[2]
-    for (var i=start; i < stop; i += step) r.push(i)
-    return r
+var range = (start, end)=>{
+    if(typeof(end) == "undefined") { end = start; start = 0; }
+    var l = [];
+    for(var i = start; i < end; i++) l.push(i)
+    return l
 }
 </script>
 <style>
