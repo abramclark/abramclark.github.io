@@ -9,36 +9,30 @@
 a { text-decoration:none; font-weight:bold; color:#116; }
 a:visited { color:#616; }
 p { margin:.5em 0; }
-body { margin:0; }
+body { margin:0; padding: 2em; }
 
 .h1 { font-size:xx-large; font-weight:bold;
     line-height:1.5em; }
-.h2, .h3, .h4 { font-size:large; }
-.h2 { display:block; margin-top:1.5em; color:#511; }
-.h3 { font-weight:bold; margin:.4em 0; }
+.h2 { display:block; margin-top:1.5em; font-size:120%; }
+.h3, .h4 { font-size:large; }
+.h3 { font-weight:bold; margin:.4em 0; color:#555; }
 .h4 { margin:.3em 0; }
 
+.header { display:flex; width:100%; }
 .box {
-    vertical-align:top;
-    display:inline-block;
-    background-color:#FFFD;
-    margin:4em 1em 0 4em;
-    padding:1em;
-}
-.small {
-    font-size:small;
-    width:13em;
-    line-height:1.5em;
+  vertical-align:top;
+  background-color:#FFFD;
+  width:20em; 
+  flex: 1;
 }
 
+.small { font-size:small; width:13em; line-height:1.5em; }
+
 .content {
-    display:inline-block;
-    width:35em;
-    margin:4em 1em;
-    padding:0 2em 2em 2em;
-    background-color:#FFFD;
+  width:45em;
+  background-color:#FFFD;
 }
-.item { margin-bottom:1em; }
+.item { margin-bottom:1em; break-inside:avoid; }
 .item li { margin-top:.5em; }
 
 .bg { position:absolute; width:100%; top:0; left:0; }
@@ -47,28 +41,19 @@ body { margin:0; }
 </style>
 </head>
 <body onload='init()'>
-<canvas width='1000' height='700' class='bg'></canvas>
 <div class='fg'>
 
-<div class='box'>
-  <div class='h1'>Abram Clark</div>
-  <div class='h3'>Senior Software Engineer</div><br>
-  
-  <a href='mailto:quuxman@gmail.com'>quuxman@gmail.com</a><br>
-  206-395-9052<br>
-  Seattle, WA<br>
-  <a href='https://www.linkedin.com/in/abramclark'>linkedin.com</a><br>
-
-  <strong class='h2'>For Fun</strong>
-  <span class='small'><ul>
-    <li>Playing piano
-    <li>Bicycling
-    <li>Performance arts:<br>
-      (juggling, unicycling,<br>slacklining, fire spinning)
-    <li>Electronics, building ebikes
-    <li>Digital art (e.g. this background)
-    <li>CAD design and 3D printing
-  </ul></span>
+<div class='header'>
+  <div class='box'>
+    <div class='h1'>Abram Clark</div>
+    <div class='h3'>Senior Software Engineer</div>
+  </div>
+  <div class='box right'>
+    <a href='mailto:quuxman@gmail.com'>quuxman@gmail.com</a><br>
+    206-395-9052<br>
+    Seattle, WA<br>
+    <a href='https://www.linkedin.com/in/abramclark'>https://www.linkedin.com/in/abramclark</a>
+  </div>
 </div>
 
 <div class='content'>
@@ -158,7 +143,6 @@ high impact domain.</p>
   </ul>
 </div>
 
-<br><br>
 <strong class='h2'>About Me</strong>
 <p>I've been fascinated with programming since teaching myself QBASIC in middle
 school. Even after 20 years of experience in the industry, I still find it
@@ -178,103 +162,20 @@ Whether it's designing elegant architectures, uncovering insights through data,
 or creating intuitive user experiences, I enjoy making functional innovative
 software.
 
+<strong class='h2'>For Fun</strong>
+<ul>
+  <li>Playing piano
+  <li>Bicycling
+  <li>Performance arts:<br>
+    (juggling, unicycling,<br>slacklining, fire spinning)
+  <li>Electronics, building ebikes
+  <li>Generative art (e.g. <a href='http://abramclark.github.io/cellular'>http://abramclark.github.io/cellular</a>)
+  <li>CAD design and 3D printing
+</ul>
+
 <br><br><span class='small'>&copy; 2024 Abram Clark All Rights Reserved</span>
 </div>
 
 </div>
-<script>
-
-let rules = [
-  ((a, b, c, i) => Math.random() > .001 ?
-    (Math.random() > .05 ?
-      (Math.random() < .3333 ? a : (Math.random() > .5 ? b : c)) :
-      (a + b + c) / 3
-    ) :
-    (Math.sin(i / 318) / 2 + .5 + Math.sin(t) / 2 + .5)
-  ),
-  (a, b, c) =>{
-    let avg = (a + b + c) / 3
-    return [a-b, a-c, b-c].findIndex(x => Math.abs(x) > .2) == -1 ?
-        avg + Math.exp(avg) / 500 :
-        Math.min(a + b, a + c, b + c) * .49
-  }
-],
-
-rule = rules[0], width, cells, t = 0, neighbors = i =>
-  [ cells[i > 0 ? i - 1 : width - 1], cells[i], cells[(i + 1) % width], i ],
-cellulate = ()=>{
-  t += .01
-  return cells.map( (x, i) => rule(...neighbors(i)) )
-},
-
-draw, tiles, tileSize = 100, tileMargin = 0, tileOffset = 0, go = 1,
-slide_count = 12, render = ()=>{
-  tiles.forEach( (x, i) => draw.putImageData(
-    x.getImageData(0, 0, width, tileSize), 0, i * tileSize - tileOffset ) )
-  tileOffset += 1
-  if(go) setTimeout(()=> requestAnimationFrame(render), 50)
-  if(tileOffset > tileSize - tileMargin){
-    renderTile(tiles[0])
-    tiles.push(tiles.shift())
-    tileOffset = 0
-    slide_count += 1
-    rule = rules[Math.floor(2 * slide_count / tiles.length) % 2]
-  }
-},
-
-renderTile = tile => range(tileSize).forEach(x =>{
-  let cells2 = cellulate()
-  tile.putImageData(cells2Img(cells), 0, x)
-  cells = cells2
-}),
- 
-cell_reset = [
-  ()=> range(0, 1, 1/width),
-  ()=> range(0, 1, 2/width).concat(range(0, 1, 2/width).reverse()),
-  ()=> range(width).map(Math.random),
-  ()=> {
-      let l = Array(95).fill(0), out = []
-      l = l.concat([1,1,1,1,1])
-      while(out.length < width) out = out.concat(l)
-      return out
-  }
-].map(f => ()=> cells = new Float32Array(f())),
-
-height, init = ()=>{
-  let canvas = document.getElementsByTagName('canvas')[0]
-  draw = canvas.getContext('2d')
-  width = canvas.width = document.body.offsetWidth
-  height = canvas.height = document.body.offsetHeight
-  cell_reset[3]()
-  tiles = range( Math.ceil(height / (tileSize - tileMargin)) + 1
-    ).map( x => buff(width, tileSize) )
-  tiles.forEach(renderTile)
-
-  render()
-},
-
-cellColor = x => Math.abs(((x+1)/2 % 1 - .5) * 100) + 205,
-cells2Img = cells =>{
-  let img = new ImageData(width, 1)
-  cells.forEach( (x, i) =>{
-    [0,1,2].forEach(o => img.data[i*4+o] = cellColor(x) )
-    img.data[i*4+3] = 255
-  })
-  return img
-},
-
-range = (start, end, step=1) =>{
-  if( end === undefined ){ end = start; start = 0 }
-  for(var l = []; start < end; start += step) l.push(start)
-  return l
-},
-
-buff = (width, height) =>{
-  let canvas = document.createElement('canvas')
-  canvas.width = width; canvas.height = height
-  return canvas.getContext('2d')
-};
-
-</script>
 </body>
 </html>
