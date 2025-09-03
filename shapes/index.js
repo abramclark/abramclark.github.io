@@ -272,8 +272,10 @@ var run_code = ()=>{
 }
 
 var init_ui = ()=>{
+    var params = new URLSearchParams(window.location.search)
     build_select(examples, $('#examples'), name => name == 'intro')
     $('#examples').onchange = set_example
+    $('#examples').value = params.get('rule_id')
     set_example()
 
     $('#stop').onclick = ()=> animate.stop()    
