@@ -13,10 +13,10 @@ body { margin:0; padding: 2em; }
 
 .h1 { font-size:xx-large; font-weight:bold;
     line-height:1.5em; }
-.h2 { display:block; margin-top:1.5em; font-size:120%; }
-.h3, .h4 { font-size:large; }
-.h3 { font-weight:bold; margin:.4em 0; color:#555; }
-.h4 { margin:.3em 0; }
+.h2 { display:block; margin-top:1.5em; margin-bottom:.5em; font-size:130%; font-weight: bold; }
+.h3 { font-weight:bold; }
+.h3, .h4 { font-size:110%; }
+.h4 { margin-bottom:.5em; }
 
 .header { display:flex; width:100%; }
 .box {
@@ -46,95 +46,112 @@ body { margin:0; padding: 2em; }
 <div class='header'>
   <div class='box'>
     <div class='h1'>Abram Clark</div>
-    <div class='h3'>Senior Software Engineer</div>
-  </div>
-  <div class='box right'>
-    <a href='mailto:quuxman@gmail.com'>quuxman@gmail.com</a><br>
-    206-395-9052<br>
+    <div class='h3'>Senior Backend Software Engineer | Systems Architect | Data Engineer</div>
+    <br>
+    quuxman [at] gmail<br>
     Seattle, WA<br>
+    <a href='https://abramclark.dev/'>https://abramclark.dev/</a><br>
     <a href='https://www.linkedin.com/in/abramclark'>https://www.linkedin.com/in/abramclark</a>
   </div>
 </div>
 
 <div class='content'>
-<strong class='h2'>About Me and Objective</strong>
-<p>I live in Seattle with my cats and wife - currently passionate about building AI tools,
-biking, and mechanical engineering prototypes with 3D printing. After 7 years in shipping logistics, I automated myself into redundancy, then was caught in a 50% downsize. I'm now looking for new problems to solve and learn from involving:
+<strong class='h2'>Professional Summary</strong>
+<p>
+I'm a senior software engineer with 20+ years of experience designing scalable backend
+systems, APIs, and data architecture. I've spent the last eight years building high-volume
+shipping infrastructure at EasyPost, leading service extractions, performance-critical
+services in Python and Rust, and large-scale migrations with no customer-visible downtime.
+I enjoy architecting new systems from scratch, designing schemas, simplifying overly
+complex systems, mentoring engineers, streamlining development, and building software that
+remains reliable and maintainable as it grows. Currently I'm contributing to an open
+source LLM-driven social media aggregator and search tool, and learning the ins and outs
+of reinforcement learning.
 </p>
-<ul>
-  <li>Machine learning / ANNs / AI</li>
-  <li>Data analytics and pipelines</li>
-  <li>System architecture and schema design</li>
-  <li>Building search engines and data visualization tools; document vectors, knowledge retrieval, informatics</li>
-</ul></p>
+
+<p>
+I'm looking for a challenging software engineering role building a meaningful product;
+something that provides obvious customer value in addition to generating revenue. I
+especially enjoy working across multiple systems and projects, learning on the job, and
+designing things from scratch starting from business goals.
+</p>
+
+<div class='h2'>Skills</div>
+<span class='h3'>Languages - </span> Python • Rust • SQL • Ruby • JavaScript • Haskell<br>
+
+<span class='h3'>Backend - </span>
+API Design • Distributed Systems • Microservices • Event-Driven Systems • Kafka • REST • <nobr>Data Pipelines</nobr><br>
+
+<span class='h3'>Databases - </span>
+Schema Design • Data Modeling • PostgreSQL • MySQL • MongoDB<br>
+
+<span class='h3'>Cloud &amp; DevOps - </span>
+Linux Admin • Google Cloud • AWS • Docker • CI/CD • GitHub • TDD<br>
+
+<span class='h3'>Current Interests - </span>
+Reinforcement Learning • LLMs • Vector Search • Knowledge Graphs<br>
 
 <strong class='h2'>Work Experience</strong>
 <div class='item'>
-  <div class='h3'>Backend Senior Software Engineer</div>
-  <div class='h4'>
-    EasyPost<br>
-    April 2017 - Jan 2025
-  </div>
-  Developing reliable API services with Python, MySQL, Rust, Ruby, Kafka, and many other tools.
+  <div class='h4'>April 2017 to Jan 2025 - Backend Senior Software Engineer @ EasyPost</div>
+  Built and maintained scalable backend services supporting a high-volume shipping
+  platform using Python, Rust, MySQL, Ruby, Kafka, and related technologies.
   <ul>
     <li>Led the design and implementation of an in-house address verification system that
       replaced a slow, unreliable, and expensive external API call. The final service was
-      implemented in Rust, runs 50x faster and has had no service level outages, and
-      resulted in large annual savings.
-    <li>Designed and implemented multiple extractions from an overloaded monolith and DB.
-      They were completed on time with no break in service or changes in API behavior.
-      This included rigorous testing and careful migrations.
+      implemented in Rust, runs roughly 50× faster, has experienced no production outages,
+      and delivers substantial annual savings.
+    <li>Designed and implemented multiple extractions from an overloaded monolith and DB,
+      delivering with zero customer-visible downtime while preserving API compatibility
+      through careful migration planning and automated testing.
     <li>Participated in design and implementation of the back end for new API products:
-      carbon offsets, insurance purchases, and analytics tools for customers. The last
-      also powers a web based analytics tool, and continues to perform well for real-time
-      queries as we grow.
-    <li>Teach architecture, schema design, and language concepts to junior developers
+      carbon offsets, insurance purchases, and customer data analytics tool. The last was
+      more efficient and extensible than existing internal systems, so was extended for an
+      internal fraud prevention API.
+    <li>Mentored engineers on architecture, schema design, and company best practices,
+      improving technical proficiency and consistency across teams.
+    <li>Improved developer tooling, build automation, and CI/CD pipelines, reducing friction with devops and improving consistency between repositories.
   </ul>
 </div>
 
 <div class='item'>
-  <div class='h3'>System Architect / Virtual CTO Consultant</div>
-  <div class='h4'>
-    GlasFunds<br>
-    Dec 2021 - Feb 2022
-  </div>
+  <div class='h4'>Dec 2021 to Feb 2022 - System Architect / Virtual CTO Consultant
+  @ GlasFunds</div>
   Senior Consultant for a private equity funding platform
 
   <ul>
-      <li>Handled live database migration from overburdened Airtable MVP to PostgreSQL with zero downtime.
-      <li>Designed and implemented schema for handling the intricacies of a 2 sided bidding market and the enterprise needs of financial compliance
-      <li>Consulted with the web development team to correctly implement the most complex and critical data model code. Specifically ensuring:<ul>
-        <li>Accuracy and security of financial transactions
-        <li>Overall data security, transparency, and correctness
-        <li>Correctly handling the many interrelated many-to-many relationships in a write once read many system.
-      </ul>
+    <li>Planned and executed live database migration from overburdened Airtable MVP to
+      PostgreSQL with zero downtime.
+    <li>Designed and implemented schema for handling the intricacies of a two-sided bidding
+      market and the enterprise needs of financial compliance
+    <li>Consulted with the web development team to correctly implement the most complex and critical data model code. Specifically ensuring:<ul>
+      <li>Accuracy and security of financial transactions
+      <li>Overall data security, transparency, and correctness
+      <li>Correctly handling the many interrelated many-to-many relationships in an
+          immutable DB that also needed to track updates to many models
+    </ul>
+    <li>Established architecture and engineering practices that enabled the platform to
+      transition from an Airtable MVP to a production financial system while maintaining
+      data integrity and regulatory requirements.
   </ul>
 </div>
 
 <div class='item'>
-  <div class='h3'>Cofounder, CTO</div>
-  <div class='h4'>
-    NewHive<br>
-    August 2009 - 2016
-  </div>
+  <div class='h4'>August 2009 to 2016 - Cofounder, CTO @ NewHive </div>
   Conceived of and created a social media creativity platform.
   <ul>
-    <li>My responsibilities: UX design, architecture, the majority of programming, hiring
-      technical team, management, and some business development.
-    <li>Developed full stack using Python, MongoDB, JavaScript, AWS, Git, and Google
-      Analytics. The core of this was a sophisticated web based drag and drop design
-      tool, coupled with a social frame that handled tagging, feeds, and comments.
-    <li>Managed and grew the platform to millions of users (analytics shows
-      115 countries as well).
+    <li>Founded and architected a social creativity platform from inception through
+      millions of users across more than 100 countries.
+    <li>Recruited and led the engineering team while remaining primary architect and
+      contributor.
+    <li>Designed and implemented a browser-based visual editor and scalable backend
+      infrastructure using Python, MongoDB, AWS, and JavaScript.
   </ul>
 </div>
 
 <div class='item'>
-  <div class='h3'>Lead Software Engineer</div>
-  <div class='h4'>
-    Internet Community &amp; Entertainment Corp.<br>
-    2006 - 2008
-  </div> 
+  <div class='h4'>2006 to 2008 - Lead Software Engineer
+  @ Internet Community &amp; Entertainment Corp.</div>
   <ul>
     <li>Designed and developed backend of auction system using PHP and PostgreSQL, including
       test framework to verify consistency of auction transactions.
@@ -143,50 +160,21 @@ biking, and mechanical engineering prototypes with 3D printing. After 7 years in
 </div>
 
 <div class='item'>
-  <div class='h3'>TA for UWEO Web Technology Solutions course</div>
-  <div class='h4'>
-    ISchool, University of Washington<br>
-    2003 - 2007
-  </div>
-  <ul>
-    <li>Designed curriculum for emerging front-end web technologies (e.g. JQuery and AJAX
-      methodologies).
-    <li>Gave lectures on JavaScript.
-    <li>Helped students one on one with assignments and final projects in the 3 class
-      course, which also included server side programming and database design.
-  </ul>
+  <div class='h4'>2003 to 2007 -
+  Teaching Assistant for UWEO Web Technology Solutions course
+  @ ISchool, University of Washington</div>
 </div>
 
 <div class='item'>
-  <div class='h3'>Developer</div>
-  <div class='h4'>
-    ISchool, University of Washington<br>
-    2003 - 2006
-  </div>
+  <div class='h4'>2003 to 2006 - Developer @ ISchool, University of Washington</div>
   <ul>
     <li>Developed and refactored department tools using ASP.NET, C#, and MS SQL Server.
     <li>Linux system administration for faculty research projects.
   </ul>
 </div>
 
-<strong class='h2'>About Me</strong>
-<p>I've been fascinated with programming since teaching myself QBASIC during 4th to 7th
-    grade. Even after 20 years of experience in the industry, I still find it really
-    satisfying when a complex assembly of logic proves to be correct by compiling and
-running as designed.</p>
-
-<strong class='h2'>For Fun</strong>
-<ul>
-    <li>Generative art:<ul>
-       <li><a href='http://abramclark.github.io/cellular'>http://abramclark.github.io/cellular</a>
-       <li><a href='https://abramclark.github.io/shapes?rule_id=triangle_spin'>https://abramclark.github.io/shapes<a>
-    </ul>
-  <li>Playing piano
-  <li>Bicycling
-  <li>CAD design and 3D printing
-  <li>Performance arts<br>
-  <li>Electronics, building ebikes
-</ul>
+<strong class='h2'>Interests</strong>
+<p>Piano, Bicycling, CAD design + 3D printing, generative art, electronics</p>
 
 <br><br><span class='small'>&copy; 2025 Abram Clark All Rights Reserved</span>
 </div>
